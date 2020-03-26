@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <style type="text/css">
+         <!--
+         .form_affl {
+             display: grid;
+             grid-template-columns: 1fr 1fr;
+             grid-template-rows: 1fr 1fr 1fr 1fr ;
+             grid-gap: 2px;
+         }
+         #pos_form {
+             grid-column: 1 / 2;
+             grid-row: 1 / 5;
+         }
+         #pos_linkstr {
+             grid-column: 2 / 3;
+             grid-row: 1 / 3;
+         }
+         #pos_html {
+             grid-column: 2 / 3;
+             grid-row: 3 / 5;
+         }
+         -->
+        </style>
+    </head>
+    <body>
+
+        <div class="form_affl">
+            <div id="pos_form">
+                <form action="#">
+                    <p>
+                        アイテムタイトル
+                    </p>
+                    <p><textarea id="str_item" name="str_item" rows="1" cols="50"> </textarea></p>
+                    <p>
+                        画像 url
+                    </p>
+                    <p><textarea id="url_image" name="url_image" rows="2" cols="50"> </textarea></p>
+
+                    <p>
+                        Amazonリンク url
+                    </p>
+                    <textarea id="url_amazon" name="url_amazon" rows="3" cols="50"> </textarea><br>
+
+                    <p>
+                        楽天リンク url
+                    </p>
+                    <textarea id="url_rakuten" name="url_rakuten" rows="3" cols="50"> </textarea><br>
+
+                    <p>
+                        Yahoo!ショッピング url
+                    </p>
+                    <p><textarea id="url_yahoo" name="url_yahoo" rows="3" cols="50"> </textarea></p>
+                    <input type="button" onclick="ShowLinkString()" value="生成"  >
+                    <input type="button" onclick="ClearTextarea()"      value="クリア">
+
+                </form>
+            </div>
+
+            <div id="pos_linkstr">
+                <p><textarea id="link_string" rows="8" cols="50" readonly="readonly"></textarea></p>
+                <input type="button" onclick="CopyTextarea()"      value="クリップボードにコピー">
+            </div>
+            <div id="pos_html">
+                <div id="link_html">               
+                </div>
+            </div>
+        </div>
+
+
+        
+        <script language="javascript" type="text/javascript">
+
+         function GetFormValues(){
+             var form_values = {};
+             form_values['str_item']    = document.getElementById("str_item"   ).value;
+             form_values['url_image']   = document.getElementById("url_image"  ).value;
+             form_values['url_amazon']  = document.getElementById("url_amazon" ).value;
+             form_values['url_rakuten'] = document.getElementById("url_rakuten").value;
+             form_values['url_yahoo']   = document.getElementById("url_yahoo"  ).value;
+             return form_values;
+         }
+         function GenerateLinkAmazon(url_amazon){
+             var link_amazon_div_start = "    <div class=\"shoplinkamazon\">\n"; 
+             var link_amazon_a         = "      <a href=\""+ url_amazon + "\" target=\"_blank\" >Amazon</a>\n"
+             var link_amazon_div_end   = "    </div> <!-- \"shoplinkamazon\" -->\n";
+
+             var link_amazon = link_amazon_div_start + link_amazon_a + link_amazon_div_end;
+             return link_amazon;
+         }
+         function GenerateLinkRakuten(url_rakuten){
+             var link_rakuten_div_start = "    <div class=\"shoplinkrakuten\">\n"; 
+             var link_rakuten_a         = "      <a href=\""+ url_rakuten + "\" target=\"_blank\">楽天市場</a>\n"
+             var link_rakuten_div_end   = "    </div> <!-- \"shoplinkrakuten\" -->\n";
+
+             var link_rakuten = link_rakuten_div_start + link_rakuten_a + link_rakuten_div_end;
+             return link_rakuten;
+         }
+
+         function GenerateLinkYahoo(url_yahoo){
+             var link_yahoo_div_start = "    <div class=\"shoplinkyahoo\">\n"; 
+             var link_yahoo_a         = "      " + url_yahoo + "\n"
+             var link_yahoo_div_end   = "    </div> <!-- \"shoplinkyahoo\" -->\n";
+
+             var link_yahoo = link_yahoo_div_start + link_yahoo_a + link_yahoo_div_end;
+             return link_yahoo;
+         }
+
+         function GenerateLinkString(form_values){
+             var str_item    = form_values['str_item'];
+             var url_image   = form_values['url_image'];
+             var url_amazon  = form_values['url_amazon'];
+             var url_rakuten = form_values['url_rakuten'];
+             var url_yahoo   = form_values['url_yahoo'];
+             var link_amazon  = "";
+             var link_rakuten = "";
+             var link_yahoo   = "";
+
+             if (url_amazon != "") {
+                 link_amazon  = GenerateLinkAmazon(url_amazon);
+             }
+             if (url_rakuten != "") {
+                 link_rakuten = GenerateLinkRakuten(url_rakuten);
+             }
+             if (url_amazon != "") {
+                 link_yahoo   = GenerateLinkYahoo(url_yahoo);
+             }
+
+             var link_str = link_amazon + link_rakuten + link_yahoo;
+             return link_str;
+         }
+         function ShowLinkString(){
+             var form_values = GetFormValues();
+             console.log(form_values);
+             var link_str  = GenerateLinkString(form_values);
+             console.log(link_str);
+             document.getElementById("link_string").value = link_str;
+             document.getElementById("link_html").innerHTML = link_str;
+         }
+         function ClearTextarea(){
+             document.getElementById("str_item"   ).value = "";
+             document.getElementById("url_image"  ).value = "";
+             document.getElementById("url_amazon" ).value = "";
+             document.getElementById("url_rakuten").value = "";
+             document.getElementById("url_yahoo"  ).value = "";
+             document.getElementById("link_string").value = "";
+             document.getElementById("link_html").innerHTML ="";
+         }
+         function CopyTextarea() {
+             let textarea = document.getElementById("link_string");
+             textarea.select();
+             document.execCommand("copy");
+         }
+         var form = document.creatElement("form");
+         document.body.appendChild(form);
+         form.appendChild(input);
+        </script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<form action="#">
+    <p><textarea id="taF2">テキストエリアです。</textarea></p>
+    <p><textarea id="taF3">テキストエリア2です。</textarea></p>
+    <p><textarea id="taF4">テキストエリア3です。</textarea></p>
+    <p><input type="button" value="▼ コピーする" onclick="fCopyDOM()" /></p>
+    <p><textarea id="taFCopy2" readonly="readonly"></textarea></p>
+</form>
+
+<script type="text/javascript">
+    function fCopyDOM(){
+        var taObj=document.getElementById("taF2");
+        var taObj2=document.getElementById("taF3");
+        var taObj3=document.getElementById("taF4");
+        var taObjCopy=document.getElementById("taFCopy2");
+        taObjCopy.value=taObj.value+"\n" + taObj2.value + "\n" + taObj3.value;
+    }
+</script>
