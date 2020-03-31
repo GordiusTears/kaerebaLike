@@ -11,71 +11,36 @@ window.onload = function(){
     css.href = "kaereba-style.css";
     head.appendChild(css);
     
-    
 
     var form_affl = document.getElementById('form_affl');
     form_affl.id = "form_affl";
-    
     form_affl.style.display             = "grid";
     form_affl.style.gridTemplateColumns = '1fr 1fr';
     form_affl.style.gridTemplateRows    = "1fr 1fr 1fr 1fr";
     form_affl.style.gridGap             = "2px";
     
-    
-    var div_form  = document.createElement('div');
-    div_form.style.gridColumn = "1 / 2";
-    div_form.style.gridRow    = "1 / 5";
-    div_form.id = "div_form";
-    
+    var div_form = makeDivCode("div_form", "1 / 2", "1 / 5");
+    div_form.appendChild(GenerateForm());
     form_affl.appendChild(div_form);
     
-    GenerateForm(div_form);
-    
-
-    
-    var div_linkstr = document.createElement('div');
-    div_linkstr.id = "div_linkstr";
-    
-    div_linkstr.style.gridColumn  = "2 / 3";
-    div_linkstr.style.gridRow     = "1 / 3";
-
+    var div_linkstr = makeDivCode("div_linkstr", "2 / 3", "1 / 3");
+    div_linkstr.appendChild(MakeTextarea("link_string", 50, 3, true));
+    div_linkstr.appendChild(MakeButton("クリップボードにコピー", CopyTextarea));
     form_affl.appendChild(div_linkstr);
-
-
-    var div_preview = document.createElement('div');
-    div_preview.id = "div_preview";
     
-    div_preview.style.gridColumn = "2 / 3";
-    div_preview.style.gridRow    = "3 / 5";
+    var div_preview = makeDivCode("div_preview", "2 / 3", "3 / 5");
     form_affl.appendChild(div_preview);
-
-    
-    var p_link_str = document.createElement('p');
-    
-    var textarea_link_str  = document.createElement('textarea');
-    textarea_link_str.id = "link_string";
-    textarea_link_str.rows = 3;
-    textarea_link_str.cols = 50;
-    textarea_link_str.readonly = "readonly";
-    p_link_str.appendChild(textarea_link_str);
-    
-    var button_copy = document.createElement('input');
-    button_copy.type  = "button";
-    button_copy.value = "クリップボードにコピー";
-//    button_copy.addEventListener('click', CopyTextarea(), false);
-    
-    button_copy.onclick = function(){
-        CopyTextarea();
-    };
-
-
-    div_linkstr.appendChild(p_link_str);
-    div_linkstr.appendChild(button_copy);
-
-    var div_html_preview = document.createElement('div');
-    div_html_preview.id = "link_html";
+    var div_html_preview = makeDivCode("link_html");
     div_preview.appendChild(div_html_preview);
 
+}
+
+function makeDivCode(id, gridColumn = "", gridRow = ""){
+    var a = document.createElement('div');
+    a.id = id;
+    a.style.gridColumn = gridColumn;
+    a.style.gridRow    = gridRow;
+    return a;
 }
 //
 //
@@ -84,111 +49,66 @@ function GenerateForm(div_form){
     var myForm    = document.createElement('form');
     myForm.setAttribute("action","#");
     myForm.setAttribute("method","post");
+
+    var myFromChild = new Array();
     // inside "div_form" 
-
-    var title_item       = document.createElement('p');
-    title_item.innerHTML =  "アイテムタイトル" ;
-
-    var textarea_item    = document.createElement('textarea');
-    textarea_item.id     = "str_item";
-    textarea_item.cols   = 50;
-    textarea_item.rows   = 1;
-
-    var title_img_url       = document.createElement('p');
-    title_img_url.innerHTML = "画像 url" ;
-
-    var p_img_url         = document.createElement('p');
-    var textarea_img_url      = document.createElement('textarea');
-    textarea_img_url.id   = "url_image";
-    textarea_img_url.cols = 50;
-    textarea_img_url.rows = 2;
-    p_img_url.appendChild(textarea_img_url);
-
+    myFromChild.push(MakeTitle("アイテムタイトル"));
+    myFromChild.push(MakeTextarea("str_item", 50, 1));
+    // Image url
+    myFromChild.push(MakeTitle("画像url"));
+    myFromChild.push(MakeTextarea("url_image", 50, 2));
     // Amazon
-    var title_amazon           = MakeTitleAmazon();
-    
-
-    var p_amazon_url     = document.createElement('p');
-    var textarea_amazon      = document.createElement('textarea');
-    textarea_amazon.id   = "url_amazon";
-    textarea_amazon.cols = 50;
-    textarea_amazon.rows = 3;
-    p_amazon_url.appendChild(textarea_amazon);
-
+    myFromChild.push(MakeTitle("Amazonリンク url"));
+    myFromChild.push(MakeTextarea("url_amazon", 50, 3));
     // Rakuten
-    var title_rakuten           = MakeTitleRakuten();
-    
-
-    var p_rakuten_url     = document.createElement('p');
-    var textarea_rakuten      = document.createElement('textarea');
-    textarea_rakuten.id   = "url_rakuten";
-    textarea_rakuten.cols = 50;
-    textarea_rakuten.rows = 3;
-    p_rakuten_url.appendChild(textarea_rakuten);
-    
+    myFromChild.push(MakeTitle("楽天リンク url"));
+    myFromChild.push(MakeTextarea("url_rakuten", 50,3));
     // Yahoo
-    var title_yahoo           = MakeTitleYahoo();
+    myFromChild.push(MakeTitle("Yahoo!ショッピング url"));
+    myFromChild.push(MakeTextarea("url_yahoo", 50, 3));
+
+    myFromChild.push(MakeButton("生成",   ShowLinkString));
+    myFromChild.push(MakeButton("クリア", ClearTextarea));
+    
+    len = myFromChild.length;
+    i = 0;
+    while (i < len){
+        myForm.appendChild(myFromChild[i++]);
+    }
+    return myForm;
     
 
-    var p_yahoo_url     =  MakeTextareaYahoo();
-    
+}
 
-    var button_creat = document.createElement('input');
-    button_creat.type  = "button";
-    button_creat.value = "生成" ;
-    button_creat.onclick = function() {
-        ShowLinkString();    
+function MakeButton(buttonName, func){
+    var button     = document.createElement('input');
+    button.type    = "button";
+    button.value   = buttonName ;
+    button.onclick = function(){
+        func();
     };
     
+    return button;
+}
 
-    var button_clear     = document.createElement('input');
-    button_clear.type    = "button";
-    button_clear.value   = "クリア" ;
-    button_clear.onclick = function() {
-        ClearTextarea();
-    };
-    
-
-    myForm.appendChild(title_item);
-    myForm.appendChild(textarea_item);
-    myForm.appendChild(title_img_url);
-    myForm.appendChild(p_img_url);
-    myForm.appendChild(title_amazon);
-    myForm.appendChild(p_amazon_url);
-    myForm.appendChild(title_rakuten);
-    myForm.appendChild(p_rakuten_url);
-    myForm.appendChild(title_yahoo);
-    myForm.appendChild(p_yahoo_url);
-    myForm.appendChild(button_creat);
-    myForm.appendChild(button_clear);
-    div_form.appendChild(myForm);
-    
-}
-function MakeTitleAmazon(){
-    var a = document.createElement('p');
-    a.innerHTML = "Amazonリンク url" ;
-    return a;
-}
-function MakeTitleRakuten(){
-    var a = document.createElement('p');
-    a.innerHTML = "楽天リンク url" ;
-    return a;
-}
-function MakeTitleYahoo(){
-    var a = document.createElement('p');
-    a.innerHTML = "Yahoo!ショッピング url" ;
+function MakeTitle(title){
+    var a       = document.createElement('p');
+    a.innerHTML =  title;
     return a;
 }
 
-function MakeTextareaYahoo(){
+
+function MakeTextarea(id, cols, rows, readonly=false){
     var a = document.createElement('p');
-    var textarea_yahoo      = document.createElement('textarea');
-    textarea_yahoo.id   = "url_yahoo";
-    textarea_yahoo.cols = 50;
-    textarea_yahoo.rows = 3;
-    a.appendChild(textarea_yahoo);
+    var textarea    = document.createElement('textarea');
+    textarea.id     = id;
+    textarea.cols   = cols;
+    textarea.rows   = rows;
+    textarea.readonly = readonly;
+    a.appendChild(textarea);
     return a;
 }
+
 
 
 // Generate Kaeraba-Like Link
