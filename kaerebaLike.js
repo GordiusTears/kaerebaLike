@@ -16,19 +16,19 @@ window.onload = function(){
     form_affl.id = "form_affl";
     form_affl.style.display             = "grid";
     form_affl.style.gridTemplateColumns = '1fr 1fr';
-    form_affl.style.gridTemplateRows    = "1fr 1fr 1fr 1fr";
+    form_affl.style.gridTemplateRows    = "1fr 1fr 1fr 1fr 1fr 1fr";
     form_affl.style.gridGap             = "2px";
     
     var div_form = makeDivCode("div_form", "1 / 2", "1 / 5");
     div_form.appendChild(GenerateForm());
     form_affl.appendChild(div_form);
     
-    var div_linkstr = makeDivCode("div_linkstr", "2 / 3", "1 / 3");
-    div_linkstr.appendChild(MakeTextarea("link_string", 50, 3, true));
+    var div_linkstr = makeDivCode("div_linkstr", "2 / 3", "2 / 5");
+    div_linkstr.appendChild(MakeTextarea("link_string", 50, 4, "23em", true));
     div_linkstr.appendChild(MakeButton("クリップボードにコピー", CopyTextarea));
     form_affl.appendChild(div_linkstr);
     
-    var div_preview = makeDivCode("div_preview", "2 / 3", "3 / 5");
+    var div_preview = makeDivCode("div_preview", "1 / 3", "5 / 7");
     form_affl.appendChild(div_preview);
     var div_html_preview = makeDivCode("link_html");
     div_preview.appendChild(div_html_preview);
@@ -52,20 +52,20 @@ function GenerateForm(div_form){
 
     var myFromChild = new Array();
     // inside "div_form" 
-    myFromChild.push(MakeTitle("アイテムタイトル"));
-    myFromChild.push(MakeTextarea("str_item", 50, 1));
+    myFromChild.push(MakeTitle("アイテムタイトル (必須)"));
+    myFromChild.push(MakeTextarea("str_item", 50, 1, "2em"));
     // Image url
-    myFromChild.push(MakeTitle("画像url"));
-    myFromChild.push(MakeTextarea("url_image", 50, 2));
+    myFromChild.push(MakeTitle("画像url (必須)"));
+    myFromChild.push(MakeTextarea("url_image", 50, 1, "2em"));
     // Amazon
-    myFromChild.push(MakeTitle("Amazonリンク url"));
-    myFromChild.push(MakeTextarea("url_amazon", 50, 3));
+    myFromChild.push(MakeTitle("Amazonリンク url (必須)"));
+    myFromChild.push(MakeTextarea("url_amazon", 50, 1, "2em"));
     // Rakuten
     myFromChild.push(MakeTitle("楽天リンク url"));
-    myFromChild.push(MakeTextarea("url_rakuten", 50,3));
+    myFromChild.push(MakeTextarea("url_rakuten", 50,1, "2em"));
     // Yahoo
     myFromChild.push(MakeTitle("Yahoo!ショッピング url"));
-    myFromChild.push(MakeTextarea("url_yahoo", 50, 3));
+    myFromChild.push(MakeTextarea("url_yahoo", 50, 1, "2em"));
 
     myFromChild.push(MakeButton("生成",   ShowLinkString));
     myFromChild.push(MakeButton("クリア", ClearTextarea));
@@ -91,19 +91,21 @@ function MakeButton(buttonName, func){
     return button;
 }
 
-function MakeTitle(title){
+function MakeTitle(title, marginBottom="8px"){
     var a       = document.createElement('p');
     a.innerHTML =  title;
+    a.style.marginBottom = marginBottom;
     return a;
 }
 
 
-function MakeTextarea(id, cols, rows, readonly=false){
+function MakeTextarea(id, cols, rows, minHeight="1em", readonly=false){
     var a = document.createElement('p');
     var textarea    = document.createElement('textarea');
     textarea.id     = id;
     textarea.cols   = cols;
     textarea.rows   = rows;
+    textarea.style.minHeight = minHeight;
     textarea.readonly = readonly;
     a.appendChild(textarea);
     return a;
@@ -176,9 +178,9 @@ function GenerateKaerebaLinkBox(form_values){
 function GenerateKaerebaLinkImage(form_values){
     const url_image   = form_values['image'];
     const url_amazon  = form_values['amazon'];
-    const ind1 = indent.repeat(3);
-    const ind2 = indent.repeat(4);
-    const ind3 = indent.repeat(5);
+    const ind1 = indent.repeat(2);
+    const ind2 = indent.repeat(3);
+    const ind3 = indent.repeat(4);
     
     const divClass             = ind1 + "<div class=\"kaerebalink-image\">\n";
     const a_start              = ind2 + "<a href=\""  + url_amazon + "\" target=\"_blank\" >\n";
@@ -218,8 +220,14 @@ function GenerateKaerebaLinkLink(form_values){
     const ind = indent.repeat(3);
     const divClass              = ind + "<div class=\"kaerebalink-link1\">\n";
     const div_shoplinkamaozn    = GenerateLinkShop(form_values, 'amazon');
-    const div_shoplinkrakuten   = GenerateLinkShop(form_values, 'rakuten');
-    const div_shoplinkyahoo     = GenerateLinkShop(form_values, 'yahoo');
+    var div_shoplinkrakuten = "";
+    if (form_values['rakuten']){
+        var div_shoplinkrakuten   = GenerateLinkShop(form_values, 'rakuten');        
+    }
+    var div_shoplinkyahoo = "";
+    if (form_values['yahoo']){
+        var div_shoplinkyahoo     = GenerateLinkShop(form_values, 'yahoo');        
+    }
     const divClassEnd           = ind + "</div> <!-- \"kaerebalink-link1 \" -->\n";
 
     return divClass + div_shoplinkamaozn + div_shoplinkrakuten + div_shoplinkyahoo + divClassEnd;
@@ -234,9 +242,9 @@ function GenerateLinkShop(form_values, shop){
 
     const divClassStart        = ind1 + "<div class=\"shoplink" + shop + "\">\n";
     if (shop == 'yahoo') {
-        var divLink              = ind2 + url + "\n";        
+        var divLink            = ind2 + url + "\n";        
     } else {
-        var divLink                = ind2 + "<a href=\""+ url + "\" target=\"_blank\">" + shopName[shop]  + "</a>\n";
+        var divLink            = ind2 + "<a href=\""+ url + "\" target=\"_blank\">" + shopName[shop]  + "</a>\n";
     }
 
     const divClassEnd          = ind1 + "</div> <!-- \"shoplink" + shop + "\" -->\n";
